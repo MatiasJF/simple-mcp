@@ -38,7 +38,7 @@ import { debugPrompt } from './prompts/debug'
 // ============================================================================
 
 const server = new McpServer({
-  name: 'simplifier-v2-mcp',
+  name: 'simple-mcp',
   version: '1.0.0'
 })
 

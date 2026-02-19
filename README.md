@@ -6,7 +6,7 @@ An MCP (Model Context Protocol) server that provides AI agents with knowledge an
 
 ### Claude Code (local)
 ```bash
-cd simplifier-v2-mcp
+cd simple-mcp
 npm install && npm run build
 ```
 
@@ -16,7 +16,7 @@ Add to `~/.claude/settings.json`:
   "mcpServers": {
     "simplifier": {
       "command": "node",
-      "args": ["/path/to/simplifier-v2-mcp/dist/index.js"]
+      "args": ["/path/to/simple-mcp/dist/index.js"]
     }
   }
 }

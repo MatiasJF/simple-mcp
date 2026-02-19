@@ -1,5 +1,5 @@
 {
-  "name": "simplifier-v2-mcp",
+  "name": "simple-mcp",
   "version": "1.0.0",
   "description": "MCP server for @bsv/simplifier — AI-assisted BSV blockchain development",
   "main": "dist/index.js",
