@@ -1,12 +1,12 @@
 // Common code patterns
 
-export const codePatterns = `# @bsv/simplifier — Common Code Patterns
+export const codePatterns = `# @bsv/simple — Common Code Patterns
 
 ## Pattern 1: Connect Wallet + Auto-check MessageBox
 \`\`\`typescript
 'use client'
 import { useState, useEffect } from 'react'
-import { createWallet, type BrowserWallet } from '@bsv/simplifier/browser'
+import { createWallet, type BrowserWallet } from '@bsv/simple/browser'
 
 export default function Page() {
   const [wallet, setWallet] = useState<BrowserWallet | null>(null)
@@ -143,7 +143,7 @@ await fetch('/api/server-wallet?action=receive', {
 
 ## Pattern 9: DID Operations
 \`\`\`typescript
-import { DID } from '@bsv/simplifier/browser'
+import { DID } from '@bsv/simple/browser'
 
 // Get wallet's DID
 const didDoc = wallet.getDID()
@@ -161,7 +161,7 @@ DID.isValid('did:bsv:02abc...')  // true
 
 ## Pattern 10: Issue Verifiable Credentials
 \`\`\`typescript
-import { CredentialIssuer, CredentialSchema, MemoryRevocationStore } from '@bsv/simplifier/browser'
+import { CredentialIssuer, CredentialSchema, MemoryRevocationStore } from '@bsv/simple/browser'
 
 const schema = new CredentialSchema({
   id: 'age-verification',
@@ -193,7 +193,7 @@ const vp = wallet.createPresentation(vcs)
 
 ## Pattern 11: Overlay Operations
 \`\`\`typescript
-import { Overlay } from '@bsv/simplifier/browser'
+import { Overlay } from '@bsv/simple/browser'
 
 const overlay = await Overlay.create({ topics: ['tm_payments'], network: 'mainnet' })
 

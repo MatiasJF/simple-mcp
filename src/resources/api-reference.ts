@@ -1,12 +1,12 @@
-// API Reference resources for @bsv/simplifier
+// API Reference resources for @bsv/simple
 
-export const walletApiReference = `# @bsv/simplifier — Wallet API Reference
+export const walletApiReference = `# @bsv/simple — Wallet API Reference
 
 ## Initialization
 
 ### Browser
 \`\`\`typescript
-import { createWallet } from '@bsv/simplifier/browser'
+import { createWallet } from '@bsv/simple/browser'
 const wallet = await createWallet()
 // Optional defaults:
 const wallet = await createWallet({ changeBasket: 'my-change', network: 'main' })
@@ -14,7 +14,7 @@ const wallet = await createWallet({ changeBasket: 'my-change', network: 'main' }
 
 ### Server (Node.js)
 \`\`\`typescript
-const { ServerWallet } = await import('@bsv/simplifier/server')
+const { ServerWallet } = await import('@bsv/simple/server')
 const wallet = await ServerWallet.create({
   privateKey: 'hex_private_key',
   network: 'main',
@@ -88,7 +88,7 @@ interface SendOutputDetail { index: number; type: 'p2pkh' | 'op_return' | 'pushd
 \`\`\`
 `
 
-export const tokensApiReference = `# @bsv/simplifier — Tokens API Reference
+export const tokensApiReference = `# @bsv/simple — Tokens API Reference
 
 ## Methods (mixed into wallet via createTokenMethods)
 
@@ -145,13 +145,13 @@ interface RedeemTokenOptions { basket: string; outpoint: string }
 Transfer a token via MessageBox P2P messaging (off-chain delivery).
 
 ### listIncomingTokens(): Promise<any[]>
-List tokens waiting in the \`simplifier_token_inbox\` MessageBox.
+List tokens waiting in the \`simple_token_inbox\` MessageBox.
 
 ### acceptIncomingToken(token: any, basket?: string): Promise<any>
 Accept incoming token into a basket via \`basket insertion\` protocol.
 `
 
-export const inscriptionsApiReference = `# @bsv/simplifier — Inscriptions API Reference
+export const inscriptionsApiReference = `# @bsv/simple — Inscriptions API Reference
 
 All inscriptions create OP_RETURN outputs (0 satoshis).
 
@@ -197,7 +197,7 @@ const hash = await wallet.inscribeFileHash('a'.repeat(64))
 \`\`\`
 `
 
-export const messageboxApiReference = `# @bsv/simplifier — MessageBox API Reference
+export const messageboxApiReference = `# @bsv/simple — MessageBox API Reference
 
 ## Identity & Certification
 
@@ -246,7 +246,7 @@ The identity registry expects these API endpoints:
 - \`POST ?action=revoke\` body: \`{ tag, identityKey }\` → \`{ success }\`
 `
 
-export const certificationApiReference = `# @bsv/simplifier — Certification API Reference
+export const certificationApiReference = `# @bsv/simple — Certification API Reference
 
 ## Certifier Class (standalone)
 
@@ -301,7 +301,7 @@ interface CertificateData {
 \`\`\`
 `
 
-export const didApiReference = `# @bsv/simplifier — DID API Reference
+export const didApiReference = `# @bsv/simple — DID API Reference
 
 ## DID Class (standalone, no wallet needed)
 
@@ -349,7 +349,7 @@ interface DIDParseResult { method: string; identityKey: string }
 
 ## Example
 \`\`\`typescript
-import { DID } from '@bsv/simplifier/browser'
+import { DID } from '@bsv/simple/browser'
 
 const doc = DID.fromIdentityKey('02abc...')
 console.log(doc.id)  // 'did:bsv:02abc...'
@@ -360,7 +360,7 @@ const resolved = wallet.resolveDID('did:bsv:02abc...')
 \`\`\`
 `
 
-export const credentialsApiReference = `# @bsv/simplifier — Credentials API Reference
+export const credentialsApiReference = `# @bsv/simple — Credentials API Reference
 
 ## CredentialSchema
 
@@ -412,13 +412,13 @@ const issuer = await CredentialIssuer.create({
 
 ### MemoryRevocationStore (browser/tests)
 \`\`\`typescript
-import { MemoryRevocationStore } from '@bsv/simplifier/browser'
+import { MemoryRevocationStore } from '@bsv/simple/browser'
 const store = new MemoryRevocationStore()
 \`\`\`
 
 ### FileRevocationStore (server only)
 \`\`\`typescript
-import { FileRevocationStore } from '@bsv/simplifier/server'
+import { FileRevocationStore } from '@bsv/simple/server'
 const store = new FileRevocationStore()           // default: .revocation-secrets.json
 const store = new FileRevocationStore('/custom/path.json')
 \`\`\`
@@ -436,7 +436,7 @@ interface RevocationStore {
 
 ## W3C VC/VP Utilities
 \`\`\`typescript
-import { toVerifiableCredential, toVerifiablePresentation } from '@bsv/simplifier/browser'
+import { toVerifiableCredential, toVerifiablePresentation } from '@bsv/simple/browser'
 
 const vc = toVerifiableCredential(certData, issuerPublicKey, { credentialType: 'MyType' })
 const vp = toVerifiablePresentation([vc1, vc2], holderKey)
@@ -448,7 +448,7 @@ const vp = toVerifiablePresentation([vc1, vc2], holderKey)
 - \`createPresentation(credentials): VerifiablePresentation\` — Wrap VCs into a VP
 `
 
-export const overlayApiReference = `# @bsv/simplifier — Overlay API Reference
+export const overlayApiReference = `# @bsv/simple — Overlay API Reference
 
 ## Overlay Class (standalone)
 

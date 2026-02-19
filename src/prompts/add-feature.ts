@@ -22,10 +22,10 @@ export const addFeaturePrompt = {
         role: 'user' as const,
         content: {
           type: 'text' as const,
-          text: `I have an existing ${framework} project with @bsv/simplifier already set up. I want to add the "${feature}" feature.
+          text: `I have an existing ${framework} project with @bsv/simple already set up. I want to add the "${feature}" feature.
 
 Please:
-1. Read the relevant API reference for this feature (use the simplifier://api/${feature} resource)
+1. Read the relevant API reference for this feature (use the simple://api/${feature} resource)
 2. Generate the implementation code using the appropriate tool
 3. Show me any gotchas specific to this feature
 4. Provide a complete, working code example I can drop into my project

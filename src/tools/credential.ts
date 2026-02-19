@@ -12,7 +12,7 @@ import {
   ${revocation ? 'MemoryRevocationStore,' : ''}
   toVerifiableCredential,
   toVerifiablePresentation
-} from '@bsv/simplifier/browser'
+} from '@bsv/simple/browser'
 
 // 1. Define Schema
 const schema = new CredentialSchema({

@@ -1,11 +1,11 @@
 // Next.js integration guide resource
 
-export const nextjsIntegrationGuide = `# @bsv/simplifier — Next.js Integration Guide
+export const nextjsIntegrationGuide = `# @bsv/simple — Next.js Integration Guide
 
 ## 1. Installation
 
 \`\`\`bash
-npm install @bsv/simplifier @bsv/sdk
+npm install @bsv/simple @bsv/sdk
 \`\`\`
 
 ## 2. next.config.ts (CRITICAL)
@@ -37,16 +37,16 @@ export default nextConfig;
 
 ### Browser components (\`'use client'\`)
 \`\`\`typescript
-import { createWallet, Certifier, DID, Overlay } from '@bsv/simplifier/browser'
-import { CredentialSchema, CredentialIssuer, MemoryRevocationStore } from '@bsv/simplifier/browser'
-import type { BrowserWallet } from '@bsv/simplifier/browser'
+import { createWallet, Certifier, DID, Overlay } from '@bsv/simple/browser'
+import { CredentialSchema, CredentialIssuer, MemoryRevocationStore } from '@bsv/simple/browser'
+import type { BrowserWallet } from '@bsv/simple/browser'
 \`\`\`
 
 ### Server API routes
 Always use dynamic import to avoid bundling server-only code:
 \`\`\`typescript
-const { ServerWallet } = await import('@bsv/simplifier/server')
-const { FileRevocationStore } = await import('@bsv/simplifier/server')
+const { ServerWallet } = await import('@bsv/simple/server')
+const { FileRevocationStore } = await import('@bsv/simple/server')
 \`\`\`
 
 ## 4. Browser Wallet Setup
@@ -54,7 +54,7 @@ const { FileRevocationStore } = await import('@bsv/simplifier/server')
 \`\`\`typescript
 'use client'
 import { useState } from 'react'
-import { createWallet, type BrowserWallet } from '@bsv/simplifier/browser'
+import { createWallet, type BrowserWallet } from '@bsv/simple/browser'
 
 export default function Page() {
   const [wallet, setWallet] = useState<BrowserWallet | null>(null)
@@ -105,7 +105,7 @@ async function getServerWallet() {
   if (initPromise) return initPromise
 
   initPromise = (async () => {
-    const { ServerWallet } = await import('@bsv/simplifier/server')
+    const { ServerWallet } = await import('@bsv/simple/server')
     const { PrivateKey } = await import('@bsv/sdk')
 
     const savedKey = loadSavedKey()

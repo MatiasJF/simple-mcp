@@ -1,5 +1,5 @@
 services:
-  simplifier-mcp:
+  simple-mcp:
     build: .
     stdin_open: true
     restart: unless-stopped

@@ -46,48 +46,48 @@ const server = new McpServer({
 // Resources
 // ============================================================================
 
-server.resource('wallet-api', 'simplifier://api/wallet', async () => ({
-  contents: [{ uri: 'simplifier://api/wallet', mimeType: 'text/markdown', text: walletApiReference }]
+server.resource('wallet-api', 'simple://api/wallet', async () => ({
+  contents: [{ uri: 'simple://api/wallet', mimeType: 'text/markdown', text: walletApiReference }]
 }))
 
-server.resource('tokens-api', 'simplifier://api/tokens', async () => ({
-  contents: [{ uri: 'simplifier://api/tokens', mimeType: 'text/markdown', text: tokensApiReference }]
+server.resource('tokens-api', 'simple://api/tokens', async () => ({
+  contents: [{ uri: 'simple://api/tokens', mimeType: 'text/markdown', text: tokensApiReference }]
 }))
 
-server.resource('inscriptions-api', 'simplifier://api/inscriptions', async () => ({
-  contents: [{ uri: 'simplifier://api/inscriptions', mimeType: 'text/markdown', text: inscriptionsApiReference }]
+server.resource('inscriptions-api', 'simple://api/inscriptions', async () => ({
+  contents: [{ uri: 'simple://api/inscriptions', mimeType: 'text/markdown', text: inscriptionsApiReference }]
 }))
 
-server.resource('messagebox-api', 'simplifier://api/messagebox', async () => ({
-  contents: [{ uri: 'simplifier://api/messagebox', mimeType: 'text/markdown', text: messageboxApiReference }]
+server.resource('messagebox-api', 'simple://api/messagebox', async () => ({
+  contents: [{ uri: 'simple://api/messagebox', mimeType: 'text/markdown', text: messageboxApiReference }]
 }))
 
-server.resource('certification-api', 'simplifier://api/certification', async () => ({
-  contents: [{ uri: 'simplifier://api/certification', mimeType: 'text/markdown', text: certificationApiReference }]
+server.resource('certification-api', 'simple://api/certification', async () => ({
+  contents: [{ uri: 'simple://api/certification', mimeType: 'text/markdown', text: certificationApiReference }]
 }))
 
-server.resource('did-api', 'simplifier://api/did', async () => ({
-  contents: [{ uri: 'simplifier://api/did', mimeType: 'text/markdown', text: didApiReference }]
+server.resource('did-api', 'simple://api/did', async () => ({
+  contents: [{ uri: 'simple://api/did', mimeType: 'text/markdown', text: didApiReference }]
 }))
 
-server.resource('credentials-api', 'simplifier://api/credentials', async () => ({
-  contents: [{ uri: 'simplifier://api/credentials', mimeType: 'text/markdown', text: credentialsApiReference }]
+server.resource('credentials-api', 'simple://api/credentials', async () => ({
+  contents: [{ uri: 'simple://api/credentials', mimeType: 'text/markdown', text: credentialsApiReference }]
 }))
 
-server.resource('overlay-api', 'simplifier://api/overlay', async () => ({
-  contents: [{ uri: 'simplifier://api/overlay', mimeType: 'text/markdown', text: overlayApiReference }]
+server.resource('overlay-api', 'simple://api/overlay', async () => ({
+  contents: [{ uri: 'simple://api/overlay', mimeType: 'text/markdown', text: overlayApiReference }]
 }))
 
-server.resource('nextjs-guide', 'simplifier://guide/nextjs', async () => ({
-  contents: [{ uri: 'simplifier://guide/nextjs', mimeType: 'text/markdown', text: nextjsIntegrationGuide }]
+server.resource('nextjs-guide', 'simple://guide/nextjs', async () => ({
+  contents: [{ uri: 'simple://guide/nextjs', mimeType: 'text/markdown', text: nextjsIntegrationGuide }]
 }))
 
-server.resource('gotchas', 'simplifier://guide/gotchas', async () => ({
-  contents: [{ uri: 'simplifier://guide/gotchas', mimeType: 'text/markdown', text: gotchasReference }]
+server.resource('gotchas', 'simple://guide/gotchas', async () => ({
+  contents: [{ uri: 'simple://guide/gotchas', mimeType: 'text/markdown', text: gotchasReference }]
 }))
 
-server.resource('patterns', 'simplifier://guide/patterns', async () => ({
-  contents: [{ uri: 'simplifier://guide/patterns', mimeType: 'text/markdown', text: codePatterns }]
+server.resource('patterns', 'simple://guide/patterns', async () => ({
+  contents: [{ uri: 'simple://guide/patterns', mimeType: 'text/markdown', text: codePatterns }]
 }))
 
 // ============================================================================

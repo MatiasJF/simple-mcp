@@ -1,6 +1,6 @@
-# @bsv/simplifier MCP Server
+# @bsv/simple MCP Server
 
-An MCP (Model Context Protocol) server that provides AI agents with knowledge and code generation tools for building BSV blockchain applications using `@bsv/simplifier`.
+An MCP (Model Context Protocol) server that provides AI agents with knowledge and code generation tools for building BSV blockchain applications using `@bsv/simple`.
 
 ## Quick Start
 
@@ -14,7 +14,7 @@ Add to `~/.claude/settings.json`:
 ```json
 {
   "mcpServers": {
-    "simplifier": {
+    "simple": {
       "command": "node",
       "args": ["/path/to/simple-mcp/dist/index.js"]
     }
@@ -24,16 +24,16 @@ Add to `~/.claude/settings.json`:
 
 ### Docker
 ```bash
-docker build -t simplifier-mcp .
+docker build -t simple-mcp .
 ```
 
 Add to `~/.claude/settings.json`:
 ```json
 {
   "mcpServers": {
-    "simplifier": {
+    "simple": {
       "command": "docker",
-      "args": ["run", "-i", "--rm", "simplifier-mcp"]
+      "args": ["run", "-i", "--rm", "simple-mcp"]
     }
   }
 }
@@ -43,15 +43,15 @@ Add to `~/.claude/settings.json`:
 
 | URI | Description |
 |-----|-------------|
-| `simplifier://api/wallet` | WalletCore + BrowserWallet + ServerWallet methods |
-| `simplifier://api/tokens` | Token create/list/send/redeem/messagebox |
-| `simplifier://api/inscriptions` | Text/JSON/hash inscriptions |
-| `simplifier://api/messagebox` | Certification, payments, identity registry |
-| `simplifier://api/certification` | Certifier, certificates, revocation |
-| `simplifier://api/did` | DID class, wallet DID methods |
-| `simplifier://api/credentials` | Schema, Issuer, VC/VP, revocation stores |
-| `simplifier://api/overlay` | Overlay, SHIP/SLAP, broadcasting |
-| `simplifier://guide/nextjs` | Complete Next.js integration guide |
+| `simple://api/wallet` | WalletCore + BrowserWallet + ServerWallet methods |
+| `simple://api/tokens` | Token create/list/send/redeem/messagebox |
+| `simple://api/inscriptions` | Text/JSON/hash inscriptions |
+| `simple://api/messagebox` | Certification, payments, identity registry |
+| `simple://api/certification` | Certifier, certificates, revocation |
+| `simple://api/did` | DID class, wallet DID methods |
+| `simple://api/credentials` | Schema, Issuer, VC/VP, revocation stores |
+| `simple://api/overlay` | Overlay, SHIP/SLAP, broadcasting |
+| `simple://guide/nextjs` | Complete Next.js integration guide |
 
 ## Tools
 
@@ -71,6 +71,6 @@ Add to `~/.claude/settings.json`:
 
 | Prompt | Description |
 |--------|-------------|
-| `integrate_simplifier` | Full integration walkthrough |
+| `integrate_simple` | Full integration walkthrough |
 | `add_bsv_feature` | Feature-specific code generation |
-| `debug_simplifier` | Debugging help for common issues |
+| `debug_simple` | Debugging help for common issues |

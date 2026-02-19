@@ -1,6 +1,6 @@
 export const debugPrompt = {
-  name: 'debug_simplifier',
-  description: 'Help debug issues with @bsv/simplifier code. Checks common gotchas and suggests fixes.',
+  name: 'debug_simple',
+  description: 'Help debug issues with @bsv/simple code. Checks common gotchas and suggests fixes.',
   arguments: [
     {
       name: 'error',
@@ -22,12 +22,12 @@ export const debugPrompt = {
         role: 'user' as const,
         content: {
           type: 'text' as const,
-          text: `I'm having an issue with @bsv/simplifier in the "${feature}" area.
+          text: `I'm having an issue with @bsv/simple in the "${feature}" area.
 
 Error/Problem: ${error}
 
 Please:
-1. Read the gotchas reference (simplifier://guide/gotchas resource) to check if this is a known issue
+1. Read the gotchas reference (simple://guide/gotchas resource) to check if this is a known issue
 2. Read the relevant API reference for the feature area
 3. Identify the likely cause based on common patterns
 4. Suggest a fix with corrected code

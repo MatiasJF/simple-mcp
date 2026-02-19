@@ -1,6 +1,6 @@
 export function scaffoldNextjsConfig(features: string[]): string {
   const deps: Record<string, string> = {
-    '@bsv/simplifier': '^0.2.0',
+    '@bsv/simple': '^0.2.0',
     '@bsv/sdk': '^1.10.1'
   }
 

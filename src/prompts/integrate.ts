@@ -1,6 +1,6 @@
 export const integratePrompt = {
-  name: 'integrate_simplifier',
-  description: 'Walk through adding @bsv/simplifier to a project. Asks about framework, features needed, and generates complete setup.',
+  name: 'integrate_simple',
+  description: 'Walk through adding @bsv/simple to a project. Asks about framework, features needed, and generates complete setup.',
   arguments: [
     {
       name: 'framework',
@@ -22,7 +22,7 @@ export const integratePrompt = {
         role: 'user' as const,
         content: {
           type: 'text' as const,
-          text: `I want to integrate @bsv/simplifier into my ${framework} project. I need these features: ${features.join(', ')}.
+          text: `I want to integrate @bsv/simple into my ${framework} project. I need these features: ${features.join(', ')}.
 
 Please help me:
 1. Set up the project configuration (next.config.ts if Next.js, package.json dependencies)

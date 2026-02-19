@@ -2,7 +2,7 @@ export function generateDIDIntegration(features: string[]): string {
   const sections: string[] = []
 
   sections.push(`\`\`\`typescript
-import { DID } from '@bsv/simplifier/browser'
+import { DID } from '@bsv/simple/browser'
 \`\`\``)
 
   if (features.includes('get')) {

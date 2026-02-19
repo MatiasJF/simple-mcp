@@ -1,6 +1,6 @@
 // Critical pitfalls and gotchas
 
-export const gotchasReference = `# @bsv/simplifier — Critical Gotchas
+export const gotchasReference = `# @bsv/simple — Critical Gotchas
 
 ## 1. basket insertion vs wallet payment are MUTUALLY EXCLUSIVE
 
@@ -54,7 +54,7 @@ const result = await peerPay.acceptPayment(payment)
 if (typeof result === 'string') throw new Error(result)
 \`\`\`
 
-The simplifier library handles this internally, but be aware when using \`@bsv/message-box-client\` directly.
+The simple library handles this internally, but be aware when using \`@bsv/message-box-client\` directly.
 
 ## 3. Change outputs from createAction are NOT in any app basket
 
@@ -95,10 +95,10 @@ It uses Node.js \`fs\` module and will crash in the browser. It's isolated in \`
 
 \`\`\`typescript
 // Browser: use MemoryRevocationStore
-import { MemoryRevocationStore } from '@bsv/simplifier/browser'
+import { MemoryRevocationStore } from '@bsv/simple/browser'
 
 // Server: use FileRevocationStore
-const { FileRevocationStore } = await import('@bsv/simplifier/server')
+const { FileRevocationStore } = await import('@bsv/simple/server')
 \`\`\`
 
 ## 7. Overlay topics must start with tm_, services with ls_
@@ -127,10 +127,10 @@ Token transfers require: \`createAction\` → get \`signableTransaction\` → si
 Always use \`await import()\` for server-only code in API routes:
 \`\`\`typescript
 // WRONG: static import at top of API route
-import { ServerWallet } from '@bsv/simplifier/server'
+import { ServerWallet } from '@bsv/simple/server'
 
 // CORRECT: dynamic import inside handler
-const { ServerWallet } = await import('@bsv/simplifier/server')
+const { ServerWallet } = await import('@bsv/simple/server')
 \`\`\`
 
 ## 11. next.config.ts serverExternalPackages is required

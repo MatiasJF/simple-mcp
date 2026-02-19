@@ -4,7 +4,7 @@ export function generateWalletSetup(target: string, framework: string): string {
       return `\`\`\`typescript
 'use client'
 import { useState } from 'react'
-import { createWallet, type BrowserWallet } from '@bsv/simplifier/browser'
+import { createWallet, type BrowserWallet } from '@bsv/simple/browser'
 
 export default function WalletProvider({ children }: { children: React.ReactNode }) {
   const [wallet, setWallet] = useState<BrowserWallet | null>(null)
@@ -43,7 +43,7 @@ export default function WalletProvider({ children }: { children: React.ReactNode
     if (framework === 'react') {
       return `\`\`\`typescript
 import { useState, useEffect } from 'react'
-import { createWallet, type BrowserWallet } from '@bsv/simplifier/browser'
+import { createWallet, type BrowserWallet } from '@bsv/simple/browser'
 
 export function useWallet() {
   const [wallet, setWallet] = useState<BrowserWallet | null>(null)
@@ -69,7 +69,7 @@ export function useWallet() {
     }
 
     return `\`\`\`typescript
-import { createWallet } from '@bsv/simplifier/browser'
+import { createWallet } from '@bsv/simple/browser'
 
 async function main() {
   const wallet = await createWallet()
@@ -108,7 +108,7 @@ async function getServerWallet() {
   if (initPromise) return initPromise
 
   initPromise = (async () => {
-    const { ServerWallet } = await import('@bsv/simplifier/server')
+    const { ServerWallet } = await import('@bsv/simple/server')
     const { PrivateKey } = await import('@bsv/sdk')
 
     const savedKey = loadSavedKey()
@@ -149,7 +149,7 @@ export async function GET() {
   }
 
   return `\`\`\`typescript
-import { ServerWallet } from '@bsv/simplifier/server'
+import { ServerWallet } from '@bsv/simple/server'
 
 async function main() {
   const wallet = await ServerWallet.create({

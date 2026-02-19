@@ -121,7 +121,7 @@ async function getServerWallet() {
   if (initPromise) return initPromise
 
   initPromise = (async () => {
-    const { ServerWallet } = await import('@bsv/simplifier/server')
+    const { ServerWallet } = await import('@bsv/simple/server')
     ${walletPersistence !== 'env' ? "const { PrivateKey } = await import('@bsv/sdk')" : ''}
     ${keyResolution}
 
