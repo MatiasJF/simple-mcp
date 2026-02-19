@@ -1,0 +1,76 @@
+# @bsv/simplifier MCP Server
+
+An MCP (Model Context Protocol) server that provides AI agents with knowledge and code generation tools for building BSV blockchain applications using `@bsv/simplifier`.
+
+## Quick Start
+
+### Claude Code (local)
+```bash
+cd simplifier-v2-mcp
+npm install && npm run build
+```
+
+Add to `~/.claude/settings.json`:
+```json
+{
+  "mcpServers": {
+    "simplifier": {
+      "command": "node",
+      "args": ["/path/to/simplifier-v2-mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+### Docker
+```bash
+docker build -t simplifier-mcp .
+```
+
+Add to `~/.claude/settings.json`:
+```json
+{
+  "mcpServers": {
+    "simplifier": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "simplifier-mcp"]
+    }
+  }
+}
+```
+
+## Resources
+
+| URI | Description |
+|-----|-------------|
+| `simplifier://api/wallet` | WalletCore + BrowserWallet + ServerWallet methods |
+| `simplifier://api/tokens` | Token create/list/send/redeem/messagebox |
+| `simplifier://api/inscriptions` | Text/JSON/hash inscriptions |
+| `simplifier://api/messagebox` | Certification, payments, identity registry |
+| `simplifier://api/certification` | Certifier, certificates, revocation |
+| `simplifier://api/did` | DID class, wallet DID methods |
+| `simplifier://api/credentials` | Schema, Issuer, VC/VP, revocation stores |
+| `simplifier://api/overlay` | Overlay, SHIP/SLAP, broadcasting |
+| `simplifier://guide/nextjs` | Complete Next.js integration guide |
+
+## Tools
+
+| Tool | Description |
+|------|-------------|
+| `scaffold_nextjs_config` | Generate next.config.ts + package.json for BSV apps |
+| `generate_wallet_setup` | Wallet initialization code (browser or server) |
+| `generate_payment_handler` | Payment handler functions |
+| `generate_token_handler` | Token CRUD operations |
+| `generate_inscription_handler` | OP_RETURN inscription handlers |
+| `generate_messagebox_setup` | MessageBox P2P integration |
+| `generate_server_route` | Next.js API route for server wallet |
+| `generate_credential_issuer` | CredentialIssuer setup with schema |
+| `generate_did_integration` | DID integration code |
+
+## Prompts
+
+| Prompt | Description |
+|--------|-------------|
+| `integrate_simplifier` | Full integration walkthrough |
+| `add_bsv_feature` | Feature-specific code generation |
+| `debug_simplifier` | Debugging help for common issues |
