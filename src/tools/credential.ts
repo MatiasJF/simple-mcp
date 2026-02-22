@@ -78,7 +78,7 @@ async function checkRevocation(serialNumber: string) {
 
 // Wallet-side: Acquire + List + Present
 async function acquireAndPresent(wallet: BrowserWallet, serverUrl: string) {
-  // Acquire from remote issuer
+  // Acquire from remote issuer (uses ?action=info and ?action=certify query params)
   const vc = await wallet.acquireCredential({
     serverUrl,
     schemaId: '${schemaId}',
@@ -98,5 +98,13 @@ async function acquireAndPresent(wallet: BrowserWallet, serverUrl: string) {
 
   return vp
 }
+
+// ---- Server-Side Route (handler factory) ----
+// app/api/credential-issuer/route.ts  (no [[...path]] catch-all needed!)
+// import { createCredentialIssuerHandler } from '@bsv/simple/server'
+// const handler = createCredentialIssuerHandler({
+//   schemas: [{ id: '${schemaId}', name: 'CustomCredential', fields: [...] }]
+// })
+// export const GET = handler.GET, POST = handler.POST
 \`\`\``
 }

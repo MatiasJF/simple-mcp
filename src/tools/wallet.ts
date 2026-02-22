@@ -85,75 +85,36 @@ main().catch(console.error)
   // Server target
   if (framework === 'nextjs') {
     return `\`\`\`typescript
-// app/api/wallet/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
-import { join } from 'path'
+// app/api/server-wallet/route.ts — Simplified with handler factory
+import { createServerWalletHandler } from '@bsv/simple/server'
+const handler = createServerWalletHandler()
+export const GET = handler.GET, POST = handler.POST
+\`\`\`
 
-const WALLET_FILE = join(process.cwd(), '.server-wallet.json')
-let serverWallet: any = null
-let initPromise: Promise<any> | null = null
+Handles lazy-init singleton, key persistence, and all actions automatically.
 
-function loadSavedKey(): string | null {
-  try {
-    if (existsSync(WALLET_FILE)) {
-      return JSON.parse(readFileSync(WALLET_FILE, 'utf-8')).privateKey || null
-    }
-  } catch {}
-  return null
-}
+**Key persistence order:**
+1. \`process.env.SERVER_PRIVATE_KEY\` — Environment variable (production)
+2. \`.server-wallet.json\` file — Persisted from previous run (development)
+3. Auto-generated via \`generatePrivateKey()\` — Fresh key (first run)
 
-async function getServerWallet() {
-  if (serverWallet) return serverWallet
-  if (initPromise) return initPromise
+**API endpoints:**
+- \`GET ?action=create\` → server identity key + status
+- \`GET ?action=request&satoshis=1000\` → BRC-29 payment request
+- \`GET ?action=balance\` → output count + total satoshis
+- \`POST ?action=receive\` body: \`{ tx, senderIdentityKey, derivationPrefix, derivationSuffix, outputIndex }\`
 
-  initPromise = (async () => {
-    const { ServerWallet } = await import('@bsv/simple/server')
-    const { PrivateKey } = await import('@bsv/sdk')
-
-    const savedKey = loadSavedKey()
-    const privateKey = process.env.SERVER_PRIVATE_KEY || savedKey || PrivateKey.fromRandom().toHex()
-
-    serverWallet = await ServerWallet.create({
-      privateKey,
-      network: 'main',
-      storageUrl: 'https://storage.babbage.systems'
-    })
-
-    if (!process.env.SERVER_PRIVATE_KEY) {
-      writeFileSync(WALLET_FILE, JSON.stringify({
-        privateKey,
-        identityKey: serverWallet.getIdentityKey()
-      }, null, 2))
-    }
-
-    return serverWallet
-  })()
-
-  return initPromise
-}
-
-export async function GET() {
-  try {
-    const wallet = await getServerWallet()
-    return NextResponse.json({
-      success: true,
-      identityKey: wallet.getIdentityKey(),
-      status: wallet.getStatus()
-    })
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
-  }
-}
-\`\`\``
+No \`@bsv/sdk\` import needed. Add \`.server-wallet.json\` to \`.gitignore\`.`
   }
 
   return `\`\`\`typescript
-import { ServerWallet } from '@bsv/simple/server'
+import { ServerWallet, generatePrivateKey } from '@bsv/simple/server'
 
 async function main() {
+  const privateKey = process.env.SERVER_PRIVATE_KEY || generatePrivateKey()
+
   const wallet = await ServerWallet.create({
-    privateKey: process.env.SERVER_PRIVATE_KEY!,
+    privateKey,
     network: 'main',
     storageUrl: 'https://storage.babbage.systems'
   })

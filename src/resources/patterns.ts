@@ -119,6 +119,11 @@ for (const payment of incoming) {
 
 ## Pattern 8: Server Wallet Funding Flow
 \`\`\`typescript
+// Server side: 3-line handler (app/api/server-wallet/route.ts)
+// import { createServerWalletHandler } from '@bsv/simple/server'
+// const handler = createServerWalletHandler()
+// export const GET = handler.GET, POST = handler.POST
+
 // Client side:
 // 1. Get payment request from server
 const res = await fetch('/api/server-wallet?action=request')
@@ -141,22 +146,42 @@ await fetch('/api/server-wallet?action=receive', {
 })
 \`\`\`
 
-## Pattern 9: DID Operations
+## Pattern 9: DID Operations (V2 — UTXO Chain-Linked)
 \`\`\`typescript
-import { DID } from '@bsv/simple/browser'
+import { createWallet, DID } from '@bsv/simple/browser'
 
-// Get wallet's DID
-const didDoc = wallet.getDID()
-console.log(didDoc.id)  // 'did:bsv:02abc...'
+// Initialize with proxy for cross-wallet resolution
+const wallet = await createWallet({ didProxyUrl: '/api/resolve-did' })
 
-// Register (persist as certificate)
-await wallet.registerDID()
+// Create a DID (on-chain, UTXO chain-linked)
+const { did, document } = await wallet.createDID()
+console.log(did)  // 'did:bsv:<txid>'
 
-// Resolve any DID
-const doc = wallet.resolveDID('did:bsv:02abc...')
+// Resolve any DID (own → local basket, others → proxy → WoC chain-following)
+const result = await wallet.resolveDID('did:bsv:<txid>')
+if (result.didDocument) {
+  console.log('Subject key:', result.didDocument.verificationMethod[0].publicKeyJwk)
+}
+if (result.didDocumentMetadata?.deactivated) {
+  console.log('DID is deactivated')
+}
+
+// Update DID (adds services, extra keys)
+await wallet.updateDID({
+  did,
+  services: [{ id: did + '#api', type: 'API', serviceEndpoint: 'https://...' }]
+})
+
+// List all wallet DIDs
+const dids = await wallet.listDIDs()
+dids.forEach(d => console.log(d.did, d.status))  // 'active' or 'deactivated'
+
+// Deactivate
+await wallet.deactivateDID(did)
 
 // Static utilities
-DID.isValid('did:bsv:02abc...')  // true
+DID.isValid('did:bsv:<txid>')   // true (64-char txid)
+DID.isValid('did:bsv:02abc...') // true (66-char legacy pubkey)
 \`\`\`
 
 ## Pattern 10: Issue Verifiable Credentials
@@ -208,5 +233,37 @@ const { txid, broadcast } = await wallet.broadcastAction(overlay, {
 
 // Query
 const results = await overlay.lookupOutputs('ls_payments', { tag: 'recent' })
+\`\`\`
+
+## Pattern 12: Server API Routes (Handler Factories)
+All server routes use handler factories — no boilerplate, no \`@bsv/sdk\` import needed:
+\`\`\`typescript
+// app/api/identity-registry/route.ts
+import { createIdentityRegistryHandler } from '@bsv/simple/server'
+const handler = createIdentityRegistryHandler()
+export const GET = handler.GET, POST = handler.POST
+
+// app/api/resolve-did/route.ts
+import { createDIDResolverHandler } from '@bsv/simple/server'
+const handler = createDIDResolverHandler()
+export const GET = handler.GET
+
+// app/api/server-wallet/route.ts
+import { createServerWalletHandler } from '@bsv/simple/server'
+const handler = createServerWalletHandler()
+export const GET = handler.GET, POST = handler.POST
+
+// app/api/credential-issuer/route.ts  (no [[...path]] needed!)
+import { createCredentialIssuerHandler } from '@bsv/simple/server'
+const handler = createCredentialIssuerHandler({
+  schemas: [{
+    id: 'my-credential',
+    name: 'MyCredential',
+    fields: [
+      { key: 'name', label: 'Full Name', type: 'text', required: true },
+    ]
+  }]
+})
+export const GET = handler.GET, POST = handler.POST
 \`\`\`
 `

@@ -145,18 +145,33 @@ const nextConfig: NextConfig = {
 }
 \`\`\`
 
-## 12. Server wallet initialization should be cached
+## 12. Server wallet initialization — use handler factories
 
-Use a module-level variable + promise to avoid re-initializing on every request:
+The \`createServerWalletHandler()\` factory handles lazy-init singleton + key persistence automatically. No manual caching needed:
 \`\`\`typescript
-let serverWallet: any = null
-let initPromise: Promise<any> | null = null
+// OLD (manual caching pattern — no longer needed):
+// let serverWallet: any = null
+// let initPromise: Promise<any> | null = null
+// async function getServerWallet() { /* ... 50 lines of boilerplate ... */ }
 
-async function getServerWallet() {
-  if (serverWallet) return serverWallet
-  if (initPromise) return initPromise
-  initPromise = (async () => { /* initialize */ })()
-  return initPromise
-}
+// NEW (3 lines):
+import { createServerWalletHandler } from '@bsv/simple/server'
+const handler = createServerWalletHandler()
+export const GET = handler.GET, POST = handler.POST
+\`\`\`
+
+Similarly, use \`createIdentityRegistryHandler()\`, \`createDIDResolverHandler()\`, and \`createCredentialIssuerHandler()\` — all handle lazy init and file persistence internally.
+
+## 13. No need to import @bsv/sdk
+
+Never import \`@bsv/sdk\` in consumer code. Use \`generatePrivateKey()\` from \`@bsv/simple/server\`:
+\`\`\`typescript
+// WRONG
+// import { PrivateKey } from '@bsv/sdk'
+// const key = PrivateKey.fromRandom().toHex()
+
+// CORRECT
+import { generatePrivateKey } from '@bsv/simple/server'
+const key = generatePrivateKey()
 \`\`\`
 `

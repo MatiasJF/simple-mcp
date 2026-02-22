@@ -163,13 +163,12 @@ server.tool(
 
 server.tool(
   'generate_server_route',
-  'Generate Next.js API route for server wallet',
+  'Generate Next.js API route using handler factories (identity-registry, did-resolver, server-wallet, credential-issuer, or all)',
   {
-    actions: z.array(z.string()).describe('Actions: create, request, balance, receive'),
-    walletPersistence: z.enum(['env', 'file', 'both']).describe('Key persistence: env (env var only), file (file only), both (env + file fallback)')
+    routeType: z.enum(['identity-registry', 'did-resolver', 'server-wallet', 'credential-issuer', 'all']).describe('Which server route to generate')
   },
-  async ({ actions, walletPersistence }) => ({
-    content: [{ type: 'text', text: generateServerRoute(actions, walletPersistence) }]
+  async ({ routeType }) => ({
+    content: [{ type: 'text', text: generateServerRoute(routeType) }]
   })
 )
 
@@ -192,9 +191,9 @@ server.tool(
 
 server.tool(
   'generate_did_integration',
-  'Generate DID integration code',
+  'Generate DID integration code (V2 UTXO chain-linked or legacy)',
   {
-    features: z.array(z.enum(['get', 'register', 'resolve'])).describe('DID features to generate')
+    features: z.array(z.enum(['create', 'resolve', 'update', 'deactivate', 'list', 'get', 'register'])).describe('DID features: create (new V2 DID), resolve (cross-wallet with proxy), update, deactivate, list, get (legacy), register (legacy)')
   },
   async ({ features }) => ({
     content: [{ type: 'text', text: generateDIDIntegration(features) }]

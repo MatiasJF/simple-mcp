@@ -244,6 +244,14 @@ The identity registry expects these API endpoints:
 - \`GET ?action=list&identityKey=...\` → \`{ success, tags: [{ tag, createdAt }] }\`
 - \`POST ?action=register\` body: \`{ tag, identityKey }\` → \`{ success }\`
 - \`POST ?action=revoke\` body: \`{ tag, identityKey }\` → \`{ success }\`
+
+## Server-side Setup (3 lines)
+\`\`\`typescript
+// app/api/identity-registry/route.ts
+import { createIdentityRegistryHandler } from '@bsv/simple/server'
+const handler = createIdentityRegistryHandler()
+export const GET = handler.GET, POST = handler.POST
+\`\`\`
 `
 
 export const certificationApiReference = `# @bsv/simple — Certification API Reference
@@ -275,7 +283,7 @@ await wallet.acquireCertificateFrom({
   replaceExisting: true  // revoke old certs first (default: true)
 })
 \`\`\`
-Server must expose: \`GET /api/info\` → \`{ certifierPublicKey, certificateType }\`, \`POST /api/certify\` → CertificateData
+Server must expose: \`GET ?action=info\` → \`{ certifierPublicKey, certificateType }\`, \`POST ?action=certify\` → CertificateData. Use \`createCredentialIssuerHandler()\` from \`@bsv/simple/server\` to set this up automatically.
 
 ### listCertificatesFrom(config): Promise<{ totalCertificates, certificates }>
 \`\`\`typescript
@@ -303,60 +311,165 @@ interface CertificateData {
 
 export const didApiReference = `# @bsv/simple — DID API Reference
 
+## Overview
+
+\`did:bsv:\` DIDs use UTXO chain-linking on the BSV blockchain. The DID identifier
+is the txid of the issuance transaction. The chain of output-0 spends carries
+the DID Document and its updates.
+
 ## DID Class (standalone, no wallet needed)
 
-### DID.fromIdentityKey(identityKey: string): DIDDocument
-Generate a W3C DID Document from a compressed public key.
+### DID.buildDocument(txid, subjectPubKeyHex, controllerDID?, services?): DIDDocumentV2
+Build a W3C DID Document with JsonWebKey2020 verification method.
+
+### DID.fromTxid(txid: string): string
+Create a DID string from a transaction ID: \`did:bsv:<txid>\`
 
 ### DID.parse(didString: string): DIDParseResult
-Parse \`did:bsv:02abc...\` → \`{ method: 'bsv', identityKey: '02abc...' }\`
+Parse \`did:bsv:<txid>\` → \`{ method: 'bsv', identifier: '<txid>' }\`
+Also accepts legacy 66-char pubkey identifiers.
 
 ### DID.isValid(didString: string): boolean
-Check if a DID string is valid \`did:bsv:\` format.
+Check if a DID string is valid \`did:bsv:\` format (64-char txid or 66-char pubkey).
+
+### DID.fromIdentityKey(identityKey: string): DIDDocument
+**Deprecated.** Generate a legacy DID Document from a compressed public key.
 
 ### DID.getCertificateType(): string
 Returns the base64 certificate type for DID persistence.
 
-## Wallet Methods
+## Wallet Methods (V2 — UTXO Chain-Linked)
+
+### createDID(options?: DIDCreateOptions): Promise<DIDCreateResult>
+Create a new on-chain DID with UTXO chain linking.
+- TX0: Issuance (chain UTXO + OP_RETURN marker)
+- TX1: Document (spends TX0, new chain UTXO + OP_RETURN with DID Document)
+\`\`\`typescript
+interface DIDCreateOptions {
+  basket?: string           // default: 'did_v2'
+  identityCode?: string     // auto-generated if omitted
+  services?: DIDService[]   // optional services in document
+}
+interface DIDCreateResult {
+  did: string               // 'did:bsv:<txid>'
+  txid: string              // issuance txid
+  identityCode: string
+  document: DIDDocumentV2
+}
+\`\`\`
+
+### resolveDID(didString: string): Promise<DIDResolutionResult>
+Resolve any \`did:bsv:\` DID to its Document.
+
+**Resolution order:**
+1. Local basket (own DIDs — fastest)
+2. Server-side proxy (\`didProxyUrl\` — handles nChain + WoC fallback)
+3. Direct resolvers (server-side only — no proxy needed)
+
+**Important:** In browsers, set \`didProxyUrl\` for cross-wallet resolution:
+\`\`\`typescript
+const wallet = await createWallet({ didProxyUrl: '/api/resolve-did' })
+\`\`\`
+\`\`\`typescript
+interface DIDResolutionResult {
+  didDocument: DIDDocumentV2 | null
+  didDocumentMetadata: { created?: string; updated?: string; deactivated?: boolean; versionId?: string }
+  didResolutionMetadata: { contentType?: string; error?: string; message?: string }
+}
+\`\`\`
+
+### updateDID(options: DIDUpdateOptions): Promise<DIDCreateResult>
+Update a DID document by spending the current chain UTXO.
+\`\`\`typescript
+interface DIDUpdateOptions {
+  did: string                       // DID to update
+  services?: DIDService[]           // new services
+  additionalKeys?: string[]         // extra verification keys (compressed pubkey hex)
+}
+\`\`\`
+
+### deactivateDID(didString: string): Promise<{ txid: string }>
+Revoke a DID. Spends the chain UTXO with payload \`"3"\` (revocation marker).
+Chain terminates — resolvers will return \`deactivated: true\`.
+
+### listDIDs(): Promise<DIDChainState[]>
+List all DIDs owned by this wallet.
+\`\`\`typescript
+interface DIDChainState {
+  did: string; identityCode: string; issuanceTxid: string
+  currentOutpoint: string; status: 'active' | 'deactivated'
+  created: string; updated: string
+}
+\`\`\`
+
+## Legacy Wallet Methods (deprecated)
 
 ### getDID(): DIDDocument
-Get this wallet's DID Document (synchronous).
-
-### resolveDID(didString: string): DIDDocument
-Resolve any \`did:bsv:\` string to its DID Document (synchronous).
+Get legacy identity-key-based DID Document (synchronous).
 
 ### registerDID(options?: { persist?: boolean }): Promise<DIDDocument>
-Persist DID as a BSV certificate using an ephemeral Certifier.
+Persist legacy DID as a BSV certificate.
 
-## Types
+## DID Document Structure (V2)
 \`\`\`typescript
-interface DIDDocument {
-  '@context': string[]
-  id: string               // 'did:bsv:{identityKey}'
-  controller: string
-  verificationMethod: DIDVerificationMethod[]
+interface DIDDocumentV2 {
+  '@context': string                    // 'https://www.w3.org/ns/did/v1'
+  id: string                            // 'did:bsv:<txid>'
+  controller?: string
+  verificationMethod: DIDVerificationMethodV2[]
   authentication: string[]
-  assertionMethod: string[]
+  service?: DIDService[]
 }
-interface DIDVerificationMethod {
-  id: string               // 'did:bsv:{key}#key-1'
-  type: string             // 'EcdsaSecp256k1VerificationKey2019'
+interface DIDVerificationMethodV2 {
+  id: string                            // 'did:bsv:<txid>#subject-key'
+  type: 'JsonWebKey2020'
   controller: string
-  publicKeyHex: string
+  publicKeyJwk: { kty: 'EC'; crv: 'secp256k1'; x: string; y: string }
 }
-interface DIDParseResult { method: string; identityKey: string }
+interface DIDService {
+  id: string; type: string; serviceEndpoint: string
+}
 \`\`\`
+
+## Cross-Wallet Resolution (Proxy Setup)
+
+Browser-side resolution of other wallets' DIDs requires a server-side proxy
+because:
+- nChain Universal Resolver is unreliable (returns HTTP 500)
+- WhatsOnChain API calls from browsers are blocked by CORS and rate-limited
+
+The proxy (\`/api/resolve-did\`) makes all external calls server-side:
+1. Try nChain resolver (10s timeout)
+2. On failure → WoC chain-following: fetch TX → parse OP_RETURN → follow output 0 spend → return last document
+
+See the DID guide (\`docs/guides/did.md\`) for the complete proxy implementation.
 
 ## Example
 \`\`\`typescript
-import { DID } from '@bsv/simple/browser'
+import { createWallet, DID } from '@bsv/simple/browser'
 
-const doc = DID.fromIdentityKey('02abc...')
-console.log(doc.id)  // 'did:bsv:02abc...'
+const wallet = await createWallet({ didProxyUrl: '/api/resolve-did' })
 
-const didDoc = wallet.getDID()
-await wallet.registerDID()  // persists as certificate
-const resolved = wallet.resolveDID('did:bsv:02abc...')
+// Create
+const { did, document } = await wallet.createDID()
+console.log(did)  // 'did:bsv:d803b04a...'
+
+// Resolve (cross-wallet, goes through proxy)
+const result = await wallet.resolveDID('did:bsv:<other-txid>')
+console.log(result.didDocument)
+
+// Update
+await wallet.updateDID({ did, services: [{ id: did + '#api', type: 'API', serviceEndpoint: 'https://...' }] })
+
+// List
+const dids = await wallet.listDIDs()
+
+// Deactivate
+await wallet.deactivateDID(did)
+
+// Static utilities
+DID.isValid('did:bsv:d803b04a...')  // true
+DID.parse('did:bsv:d803b04a...')    // { method: 'bsv', identifier: 'd803b04a...' }
 \`\`\`
 `
 
@@ -443,9 +556,20 @@ const vp = toVerifiablePresentation([vc1, vc2], holderKey)
 \`\`\`
 
 ## Wallet Methods
-- \`acquireCredential(config): Promise<VerifiableCredential>\` — Acquire VC from remote issuer
+- \`acquireCredential(config): Promise<VerifiableCredential>\` — Acquire VC from remote issuer (uses \`?action=info\` and \`?action=certify\` query params)
 - \`listCredentials(config): Promise<VerifiableCredential[]>\` — List certs as W3C VCs
 - \`createPresentation(credentials): VerifiablePresentation\` — Wrap VCs into a VP
+
+## Server-Side Handler
+
+\`\`\`typescript
+// app/api/credential-issuer/route.ts  (no [[...path]] catch-all needed!)
+import { createCredentialIssuerHandler } from '@bsv/simple/server'
+const handler = createCredentialIssuerHandler({
+  schemas: [{ id: 'my-cred', name: 'MyCred', fields: [{ key: 'name', label: 'Name', type: 'text', required: true }] }]
+})
+export const GET = handler.GET, POST = handler.POST
+\`\`\`
 `
 
 export const overlayApiReference = `# @bsv/simple — Overlay API Reference
