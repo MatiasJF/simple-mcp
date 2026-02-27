@@ -30,12 +30,9 @@ async function revokeIdentity(wallet: BrowserWallet) {
     sections.push(`### Send Payment via MessageBox
 \`\`\`typescript
 async function sendPayment(wallet: BrowserWallet, recipientKey: string, satoshis: number) {
-  const result = await wallet.sendMessageBoxPayment(recipientKey, satoshis, 'messagebox-change')
+  const result = await wallet.sendMessageBoxPayment(recipientKey, satoshis)
 
   console.log('Payment sent:', result.amount, 'sats to', result.recipient)
-  if (result.reinternalized) {
-    console.log('Change recovered:', result.reinternalized.count)
-  }
 
   return result
 }

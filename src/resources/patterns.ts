@@ -34,18 +34,14 @@ export default function Page() {
 }
 \`\`\`
 
-## Pattern 2: Simple Payment with Change Recovery
+## Pattern 2: Simple Payment via MessageBox P2P
 \`\`\`typescript
 const result = await wallet.pay({
   to: recipientKey,
-  satoshis: 1000,
-  memo: 'Coffee payment',
-  basket: 'my-payments',
-  changeBasket: 'my-change'
+  satoshis: 1000
 })
 
 console.log('TXID:', result.txid)
-console.log('Change recovered:', result.reinternalized?.count)
 \`\`\`
 
 ## Pattern 3: Multi-Output Send
@@ -56,8 +52,7 @@ const result = await wallet.send({
     { data: ['Hello blockchain!'], basket: 'text' },
     { to: wallet.getIdentityKey(), data: [{ value: 42 }], satoshis: 1, basket: 'tokens' }
   ],
-  description: 'Multi-output transaction',
-  changeBasket: 'change'
+  description: 'Multi-output transaction'
 })
 \`\`\`
 
@@ -108,7 +103,7 @@ await wallet.certifyForMessageBox('@alice', '/api/identity-registry')
 const results = await wallet.lookupIdentityByTag('bob', '/api/identity-registry')
 
 // Send payment
-await wallet.sendMessageBoxPayment(results[0].identityKey, 1000, 'change')
+await wallet.sendMessageBoxPayment(results[0].identityKey, 1000)
 
 // Receive payments
 const incoming = await wallet.listIncomingPayments()
@@ -130,7 +125,7 @@ const res = await fetch('/api/server-wallet?action=request')
 const { paymentRequest } = await res.json()
 
 // 2. Fund server wallet
-const result = await wallet.fundServerWallet(paymentRequest, 'server-funding', 'change')
+const result = await wallet.fundServerWallet(paymentRequest, 'server-funding')
 
 // 3. Send tx to server
 await fetch('/api/server-wallet?action=receive', {
