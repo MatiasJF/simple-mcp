@@ -1,6 +1,6 @@
 export function scaffoldNextjsConfig(features: string[]): string {
   const deps: Record<string, string> = {
-    '@bsv/simple': '^0.2.0'
+    '@bsv/simple': '^0.2.3'
   }
 
   const nextConfig = `import type { NextConfig } from "next";
@@ -41,6 +41,8 @@ ${packageAdditions}
 \`\`\`
 .server-wallet.json
 .revocation-secrets.json
+.identity-registry.json
+.credential-issuer-key.json
 \`\`\`
 
 ## Features configured: ${features.join(', ')}

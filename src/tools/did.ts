@@ -71,19 +71,30 @@ async function resolveDID(wallet: BrowserWallet, didString: string) {
 
 #### Resolution Proxy (Next.js API Route)
 
-The proxy tries the nChain Universal Resolver first, then falls back to
-WhatsOnChain UTXO chain-following server-side (no CORS, no rate limits).
+Use the handler factory — **do NOT write manual proxy code**:
 
-Create \`app/api/resolve-did/route.ts\` — see the DID guide for the full
-implementation. The key logic:
+\`\`\`typescript
+// app/api/resolve-did/route.ts
+import { createDIDResolverHandler } from '@bsv/simple/server'
+const handler = createDIDResolverHandler()
+export const GET = handler.GET
+\`\`\`
 
-1. Parse \`did:bsv:<txid>\` from query param
-2. Try nChain resolver (may return 500 — their infra is unreliable)
-3. On failure, follow the UTXO chain via WoC:
-   - Fetch TX → parse OP_RETURN for \`BSVDID\` marker
-   - Payload \`"1"\` = issuance, \`"3"\` = revocation, JSON = document
-   - Follow output 0 spend chain until it ends
-   - Return last document found`)
+The handler automatically:
+- Tries the nChain Universal Resolver first (10s timeout)
+- Falls back to WoC UTXO chain-following on failure
+- Handles deactivated DIDs
+- Limits chain hops to 100
+
+**Custom config (optional):**
+\`\`\`typescript
+createDIDResolverHandler({
+  resolverUrl: 'https://custom-resolver.com',
+  wocBaseUrl: 'https://api.whatsonchain.com',
+  resolverTimeout: 10000,
+  maxHops: 100
+})
+\`\`\``)
   }
 
   if (features.includes('update')) {

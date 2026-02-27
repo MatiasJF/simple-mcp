@@ -35,13 +35,14 @@ Please:
 Common causes to check:
 - basket insertion vs wallet payment confusion
 - PeerPayClient.acceptPayment() swallowing errors
-- Missing changeBasket for change recovery
 - result.tx being undefined
 - Missing serverExternalPackages in next.config.ts
 - Static vs dynamic imports for server code
 - Overlay topic/service prefix requirements (tm_, ls_)
 - FileRevocationStore used in browser context
-- Server wallet not cached (re-initializing every request)`
+- Writing manual API route code instead of using handler factories
+- Importing @bsv/sdk directly (use @bsv/simple/server exports instead)
+- pay() now uses MessageBox P2P, not direct on-chain P2PKH`
         }
       }
     ]
