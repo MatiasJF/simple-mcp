@@ -142,9 +142,9 @@ No \`@bsv/sdk\` import needed. Add \`.server-wallet.json\` to \`.gitignore\`.
 Use descriptive, hyphenated names:
 - \`my-app-payments\` — Payment outputs
 - \`my-app-tokens\` — PushDrop tokens
-- \`my-app-change\` — Reinternalized change
 - \`text\` — Text inscriptions
 - \`json\` — JSON inscriptions
+- \`did-chain\` — DID chain UTXOs
 - \`revocation-utxos\` — Credential revocation
 
 ## 8. Common Patterns

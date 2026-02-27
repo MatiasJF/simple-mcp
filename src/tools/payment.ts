@@ -6,24 +6,14 @@ export function generatePaymentHandler(type: string, basket?: string): string {
 async function sendPayment(
   wallet: BrowserWallet,
   recipientKey: string,
-  satoshis: number,
-  memo?: string
+  satoshis: number
 ) {
   const result = await wallet.pay({
     to: recipientKey,
-    satoshis,
-    memo,
-    basket: '${effectiveBasket}',
-    changeBasket: '${effectiveBasket}-change'
+    satoshis
   })
 
   console.log('TXID:', result.txid)
-  if (result.reinternalized) {
-    console.log('Change recovered:', result.reinternalized.count)
-    if (result.reinternalized.errors.length) {
-      console.warn('Change errors:', result.reinternalized.errors)
-    }
-  }
 
   return result
 }
@@ -48,8 +38,7 @@ async function sendMultiOutput(
       data: o.data,
       basket: o.basket || '${effectiveBasket}'
     })),
-    description: 'Multi-output transaction',
-    changeBasket: '${effectiveBasket}-change'
+    description: 'Multi-output transaction'
   })
 
   console.log('TXID:', result.txid)
@@ -77,8 +66,7 @@ async function fundServer(wallet: BrowserWallet, serverApiUrl: string) {
   // 2. Fund server wallet via BRC-29 derivation
   const result = await wallet.fundServerWallet(
     paymentRequest,
-    '${effectiveBasket}',
-    '${effectiveBasket}-change'
+    '${effectiveBasket}'
   )
 
   if (!result.tx) {

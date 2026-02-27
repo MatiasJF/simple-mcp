@@ -56,21 +56,7 @@ if (typeof result === 'string') throw new Error(result)
 
 The simple library handles this internally, but be aware when using \`@bsv/message-box-client\` directly.
 
-## 3. Change outputs from createAction are NOT in any app basket
-
-When \`createAction\` produces change outputs, they exist in the wallet but aren't in any named basket. To track them:
-
-\`\`\`typescript
-// Option A: Use changeBasket in pay/send
-const result = await wallet.pay({ to: key, satoshis: 1000, changeBasket: 'my-change' })
-
-// Option B: Manual reinternalization
-if (result.tx) {
-  await wallet.reinternalizeChange(result.tx, 'my-change', [0]) // skip output index 0
-}
-\`\`\`
-
-## 4. result.tx from createAction may be undefined
+## 3. result.tx from createAction may be undefined
 
 Always check before using:
 \`\`\`typescript
@@ -82,14 +68,14 @@ if (!result.tx) {
 // Now safe to use result.tx
 \`\`\`
 
-## 5. BRC-29 Payment Derivation Protocol ID
+## 4. BRC-29 Payment Derivation Protocol ID
 
 Always use: \`[2, '3241645161d8']\`
 \`\`\`typescript
 const protocolID: [SecurityLevel, string] = [2, '3241645161d8']
 \`\`\`
 
-## 6. FileRevocationStore is server-only
+## 5. FileRevocationStore is server-only
 
 It uses Node.js \`fs\` module and will crash in the browser. It's isolated in \`file-revocation-store.ts\` to prevent Turbopack from bundling it.
 
@@ -101,7 +87,7 @@ import { MemoryRevocationStore } from '@bsv/simple/browser'
 const { FileRevocationStore } = await import('@bsv/simple/server')
 \`\`\`
 
-## 7. Overlay topics must start with tm_, services with ls_
+## 6. Overlay topics must start with tm_, services with ls_
 
 The Overlay class enforces these prefixes and throws if violated:
 \`\`\`typescript
@@ -114,13 +100,36 @@ await Overlay.create({ topics: ['payments'] })
 await wallet.advertiseSLAP('domain.com', 'payments')
 \`\`\`
 
-## 8. reinternalizeChange skips the largest change output
-
-The wallet automatically tracks one change output internally. \`reinternalizeChange()\` only recovers the *additional* orphaned change outputs. If there's only one change output, it returns \`{ count: 0 }\`.
-
-## 9. Token send/redeem uses two-step signing
+## 7. Token send/redeem uses two-step signing
 
 Token transfers require: \`createAction\` → get \`signableTransaction\` → sign with PushDrop unlock → \`signAction\`. Don't try to do it in a single step.
+
+## 8. pay() uses PeerPayClient.sendPayment()
+
+Payments via \`wallet.pay()\` are routed through MessageBox P2P using PeerPayClient, not direct on-chain P2PKH. For direct on-chain payments, use \`wallet.send()\` with a P2PKH output:
+
+\`\`\`typescript
+// MessageBox P2P payment (via pay):
+await wallet.pay({ to: recipientKey, satoshis: 1000 })
+
+// Direct on-chain P2PKH (via send):
+await wallet.send({
+  outputs: [{ to: recipientKey, satoshis: 1000 }],
+  description: 'Direct payment'
+})
+\`\`\`
+
+## 9. Server exports not available from @bsv/simple
+
+Server-only utilities (ServerWallet, handler factories, FileRevocationStore, generatePrivateKey) must be imported from \`@bsv/simple/server\`, not from the main \`@bsv/simple\` entry point.
+
+\`\`\`typescript
+// WRONG
+import { ServerWallet } from '@bsv/simple'
+
+// CORRECT
+import { ServerWallet } from '@bsv/simple/server'
+\`\`\`
 
 ## 10. Dynamic imports for server code in Next.js
 
@@ -133,7 +142,7 @@ import { ServerWallet } from '@bsv/simple/server'
 const { ServerWallet } = await import('@bsv/simple/server')
 \`\`\`
 
-## 11. next.config.ts serverExternalPackages is required
+## 11. next.config.ts serverExternalPackages is required (updated for v2)
 
 Without this, Turbopack bundles \`@bsv/wallet-toolbox\`, \`knex\`, and database drivers for the browser:
 \`\`\`typescript

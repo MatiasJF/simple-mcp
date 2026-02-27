@@ -9,7 +9,7 @@ export const walletApiReference = `# @bsv/simple — Wallet API Reference
 import { createWallet } from '@bsv/simple/browser'
 const wallet = await createWallet()
 // Optional defaults:
-const wallet = await createWallet({ changeBasket: 'my-change', network: 'main' })
+const wallet = await createWallet({ network: 'main' })
 \`\`\`
 
 ### Server (Node.js)
@@ -36,22 +36,17 @@ const wallet = await ServerWallet.create({
 - \`derivePaymentKey(counterparty: string, invoiceNumber?: string): Promise<string>\` — Derive BRC-29 payment key (protocol [2, '3241645161d8'])
 
 ### Payments
-- \`pay(options: PaymentOptions): Promise<TransactionResult>\` — P2PKH payment with optional memo, BRC-29 derivation, change recovery
+- \`pay(options: PaymentOptions): Promise<TransactionResult>\` — Payment via MessageBox P2P (PeerPayClient)
 - \`send(options: SendOptions): Promise<SendResult>\` — Multi-output: combine P2PKH + OP_RETURN + PushDrop in one tx
-- \`fundServerWallet(request: PaymentRequest, basket?: string, changeBasket?: string): Promise<TransactionResult>\` — Fund a ServerWallet using BRC-29 derivation
-- \`reinternalizeChange(tx: number[], basket: string, skipOutputIndexes?: number[]): Promise<ReinternalizeResult>\` — Recover orphaned change outputs into a basket
+- \`fundServerWallet(request: PaymentRequest, basket?: string): Promise<TransactionResult>\` — Fund a ServerWallet using BRC-29 derivation
 
 ### PaymentOptions
 \`\`\`typescript
 interface PaymentOptions {
   to: string              // recipient identity key
   satoshis: number        // amount
-  memo?: string           // optional OP_RETURN memo
+  memo?: string           // optional memo
   description?: string    // tx description
-  basket?: string         // track payment in basket
-  changeBasket?: string   // reinternalize change outputs
-  derivationPrefix?: string  // BRC-29 prefix
-  derivationSuffix?: string  // BRC-29 suffix
 }
 \`\`\`
 
@@ -60,17 +55,16 @@ interface PaymentOptions {
 interface SendOptions {
   outputs: SendOutputSpec[]
   description?: string
-  changeBasket?: string
 }
 
 interface SendOutputSpec {
-  to?: string                          // recipient key
-  satoshis?: number                    // amount
-  data?: (string | object | number[])[] // data fields
+  to?: string                              // recipient key
+  satoshis?: number                        // amount
+  data?: Array<string | object | number[]> // data fields
   description?: string
   basket?: string
-  protocolID?: [number, string]        // for PushDrop
-  keyID?: string                       // for PushDrop
+  protocolID?: [number, string]            // for PushDrop
+  keyID?: string                           // for PushDrop
 }
 // Rules: to only → P2PKH | data only → OP_RETURN | to + data → PushDrop
 \`\`\`
@@ -81,9 +75,8 @@ interface SendOutputSpec {
 
 ## Result Types
 \`\`\`typescript
-interface TransactionResult { txid: string; tx: any; outputs?: OutputInfo[]; reinternalized?: ReinternalizeResult }
+interface TransactionResult { txid: string; tx: any; outputs?: OutputInfo[] }
 interface SendResult extends TransactionResult { outputDetails: SendOutputDetail[] }
-interface ReinternalizeResult { count: number; errors: string[] }
 interface SendOutputDetail { index: number; type: 'p2pkh' | 'op_return' | 'pushdrop'; satoshis: number; description: string }
 \`\`\`
 `
@@ -212,9 +205,9 @@ Remove all registered handles for this identity key.
 
 ## Payments
 
-### sendMessageBoxPayment(to: string, satoshis: number, changeBasket?: string): Promise<any>
+### sendMessageBoxPayment(to: string, satoshis: number): Promise<any>
 Send payment via MessageBox using \`createPaymentToken()\` + \`sendMessage()\`.
-Returns: \`{ txid, amount, recipient, reinternalized? }\`
+Returns: \`{ txid, amount, recipient }\`
 
 ### listIncomingPayments(): Promise<any[]>
 List payments in the \`payment_inbox\` MessageBox.

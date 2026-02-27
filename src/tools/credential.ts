@@ -99,12 +99,28 @@ async function acquireAndPresent(wallet: BrowserWallet, serverUrl: string) {
   return vp
 }
 
-// ---- Server-Side Route (handler factory) ----
+// ---- Server-Side Route (REQUIRED for remote issuance) ----
+// Use the handler factory — do NOT write manual route code:
+
 // app/api/credential-issuer/route.ts  (no [[...path]] catch-all needed!)
-// import { createCredentialIssuerHandler } from '@bsv/simple/server'
-// const handler = createCredentialIssuerHandler({
-//   schemas: [{ id: '${schemaId}', name: 'CustomCredential', fields: [...] }]
-// })
-// export const GET = handler.GET, POST = handler.POST
+import { createCredentialIssuerHandler } from '@bsv/simple/server'
+const handler = createCredentialIssuerHandler({
+  schemas: [{
+    id: '${schemaId}',
+    name: 'CustomCredential',
+    fields: [
+${fieldsDef}
+    ]
+  }]
+})
+export const GET = handler.GET, POST = handler.POST
+
+// API endpoints (all query-param based):
+// GET  ?action=info           → { certifierPublicKey, certificateType, schemas }
+// GET  ?action=schema&id=...  → schema details
+// POST ?action=certify        → CertificateData (wallet acquisition)
+// POST ?action=issue          → { credential: VerifiableCredential }
+// POST ?action=verify         → { verification: VerificationResult }
+// POST ?action=revoke         → { txid }
 \`\`\``
 }
